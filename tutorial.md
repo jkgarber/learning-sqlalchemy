@@ -138,3 +138,30 @@ with engine.connect() as conn:
 ```
 
 A key behavioral difference between “execute” and “executemany” is that the latter doesn’t support returning of result rows, even if the statement includes the RETURNING clause. The one exception to this is when using a Core `insert()` construct, introduced later in this tutorial.
+
+### Executing with an ORM Session
+
+The fundamental transactional / database interactive object when using the ORM is called the `Session`. This object is used in a manner very similar to that of the `Connection`. It refers to a `Connection` internally which it uses to emit SQL. The `Session` has a few different creational patterns, but here we will illustrate the most basic one that tracks exactly with how the `Connection` is used.
+
+```py
+from sqlalchemy.orm import Session
+
+stmt = text("SELECT x, y FROM some_table WHERE y > :y ORDER BY x, y")
+with Session(engine) as session:
+	result = session.execute(stmt, {"y": 6})
+	for row in result:
+		print(f"x: {row.x} y: {row.y})
+```
+
+Also, like the `Connection`, the `Session` features “commit as you go” behavior using the `Session.commit()` method:
+
+```py
+with Session(Engine) as session:
+	result = session.execute(
+		text("UPDATE some_table SET y=:y WHERE x=:x"),
+		[{"x": 9, "y": 11}, {"x": 13, "y": 15}],
+	)
+	session.commit()
+```
+
+Note: The `Session` doesn’t hold onto the `Connection` object after it ends the transaction. It gets a new `Connection` from the `Engine` the next time it needs to execute SQL against the database.
