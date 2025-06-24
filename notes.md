@@ -103,7 +103,7 @@ with engine.connect() as conn:
 	for row in result:
 		y = row.y
 	```
-- **Mapping Access**: The Result may be **transformed** into a `MappingResult` object using the `Result.mappings()` modifier; this is a result object that yields dictionary-like `RowMapping` objects rather than `Row` objects:
+- **Mapping Access**: The Result may be transformed into a `MappingResult` object using the `Result.mappings()` modifier; this is a result object that yields read-only dictionary-like `RowMapping` objects rather than `Row` objects:
 	```py
 	result = conn.execute(text("select x, y from some_table"))
 	for dict_row in result.mappings():
@@ -111,4 +111,30 @@ with engine.connect() as conn:
 		y = dict_row["y"]
 	```
 
+#### Sending Parameters
 
+The `Connection.execute()` method accepts parameters which are known as bound parameters. For example, say we wanted to limit our SELECT statement only to rows where the “y” value were greater than a certain value. The `text()` construct accepts these using a colon format “`:y`”. The actual value for “`:y`” is then passed as the second argument to `Connection.execute()` in the form of a dictionary:
+
+```py
+with engine.connect() as conn:
+	result = conn.execute(text("SElECT x, y FROM some_table WHERE y > :y"), {"y": 2})
+	for row in result:
+		print(f"x: {row.x} y: {row.y}")
+```
+
+In the logged SQL output the bound parameter `:y` was converted into a question mark because the SQLite database driver uses a format called “qmark parameter style”. This is most famously known as how to avoid SQL injection attacks when the data is untrusted. However it also allows the SQLAlchemy dialects and/or DBAPI to correctly handle the incoming input for the backend.
+
+#### Sending Multiple Parameters
+
+For DML statements such as “INSERT”, “UPDATE” and “DELETE”, we can send multiple parameter sets to the `Connection.execute()` method by passing a list of dictionaries instead of a single dictionary, which indicates that the single SQL statement should be invoked multiple times, once for each parameter set. This style of execution is known as executemany:
+
+```py
+with engine.connect() as conn:
+	conn.execute(
+		text("INSERT INTO some_table (x, y) VALUES (:x, :y)"),
+		[{"x": 11, "y": 12}, {"x": 13, "y": 14}],
+	)
+	conn.commit()
+```
+
+A key behavioral difference between “execute” and “executemany” is that the latter doesn’t support returning of result rows, even if the statement includes the RETURNING clause. The one exception to this is when using a Core `insert()` construct, introduced later in this tutorial.
