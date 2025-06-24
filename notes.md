@@ -40,3 +40,18 @@ with engine.connect() as conn:
 	print(result.all())
 ```
 
+### Committing Changes
+
+We can change our example above to create a table, insert some data and then commit the transaction using the `Connection.commit()` method, inside the block where we have the `Connection` object:
+
+```py
+with engine.connect() as conn:
+	conn.execute(text("CREATE TABLE some_table (x int, y int)"))
+	conn.execute(
+		text("INSERT INTO some_table (x, y) VALUES (:x, :y)"),
+		[{"x": 1, "y": 1}, {"x": 2, "y": 4}],
+	)
+	conn.commit()
+```
+
+After this, we can continue to run more SQL statements and call `Connection.commit()` again for those statements. SQLAlchemy refers to this style as **commit as you go**.
