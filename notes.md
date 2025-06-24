@@ -91,6 +91,13 @@ with engine.connect() as conn:
 	for x, y in result:
 		...
 	```
+- **Integer Index**: Tuples are Python sequences, so regular integer access is available too:
+	```py
+	result = conn.execute(text("select x, y from some_table"))
+	for row in result:
+		x = row[0]
+	```
+
 
 
 
