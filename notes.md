@@ -55,3 +55,15 @@ with engine.connect() as conn:
 ```
 
 After this, we can continue to run more SQL statements and call `Connection.commit()` again for those statements. SQLAlchemy refers to this style as **commit as you go**.
+
+The default behavior of the Python DBAPI is that a transaction is always in progress. However, wWe can declare our “connect” block to be a transaction block up front. To do this, we use the `Engine.begin()` method to get the connection, rather than the `Engine.connect()` method. This method will enclose everything inside of a transaction with either a COMMIT at the end if the block was successful, or a ROLLBACK if an exception was raised.
+
+```py
+with engine.begin() as conn:
+	conn.execute(
+		text("INSERT INTO some_table (x, y) VALUES (:x, :y)"),
+		[{"x": 6, "y": 8}, {"x": 9, "y": 10}],
+	)
+```
+
+This style is known as **begin once**. You should mostly prefer the “begin once” style because it’s shorter and shows the intention of the entire block up front. However, in this tutorial we’ll use “commit as you go” style as it’s more flexible for demonstration purposes.
