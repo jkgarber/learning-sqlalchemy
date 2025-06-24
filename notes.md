@@ -85,12 +85,12 @@ with engine.connect() as conn:
 
 `Conn.execute()` returned a called `Result` object representing an iterable object of result rows. The `Result.all()` method returns a list of all the `Row` objects. The `Row` objects themselves are intended to act like Python named tuples. Below we illustrate a variety of ways to access rows.
 
-**Tuple Assignment**: Assign variables to each row positionally as they are received:
-```py
-result = con.execute(text("select x, y from some_table"))
-for x, y in result:
-	...
-```
+- **Tuple Assignment**: Assign variables to each row positionally as they are received:
+	```py
+	result = con.execute(text("select x, y from some_table"))
+	for x, y in result:
+		...
+	```
 
 
 
