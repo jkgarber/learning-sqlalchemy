@@ -97,7 +97,18 @@ with engine.connect() as conn:
 	for row in result:
 		x = row[0]
 	```
-
-
+- **Attribute Name**: As these are Python named tuples, the tuples have dynamic attribute names matching the names of each column.
+	```py
+	result = conn.execute(text("select x, y from some_table"))
+	for row in result:
+		y = row.y
+	```
+- **Mapping Access**: The Result may be **transformed** into a `MappingResult` object using the `Result.mappings()` modifier; this is a result object that yields dictionary-like `RowMapping` objects rather than `Row` objects:
+	```py
+	result = conn.execute(text("select x, y from some_table"))
+	for dict_row in result.mappings():
+		x = dict_row["x"]
+		y = dict_row["y"]
+	```
 
 
