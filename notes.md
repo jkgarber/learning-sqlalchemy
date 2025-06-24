@@ -42,7 +42,7 @@ with engine.connect() as conn:
 
 ### Committing Changes
 
-We can change our example above to create a table, insert some data and then commit the transaction using the `Connection.commit()` method, inside the block where we have the `Connection` object:
+We can create a table, insert some data and then commit the transaction using the `Connection.commit()` method, inside the block where we have the `Connection` object:
 
 ```py
 with engine.connect() as conn:
