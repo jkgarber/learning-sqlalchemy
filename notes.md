@@ -67,3 +67,30 @@ with engine.begin() as conn:
 ```
 
 This style is known as **begin once**. You should mostly prefer this style because it’s shorter and shows the intention of the entire block up front. However, in this tutorial we’ll use “commit as you go” style as it’s more flexible for demonstration purposes.
+
+### Basics of Statement Execution
+
+In this section we’ll illustrate more closely the mechanics and interactions of `Connection.execute()`, `text()`, and `Result`.
+
+#### Fetching Rows
+
+We’ll first illustrate the `Result` object more closely by making use of the rows we’ve inserted previously, running a textual SELECT statement on the table we’ve created:
+
+```py
+with engine.connect() as conn:
+	result = conn.execute(text("SELECT x, y FROM some_table"))
+	for row in result:
+		print(f"x: {row.x} y:{row.y}")
+```
+
+`Conn.execute()` returned a called `Result` object representing an iterable object of result rows. The `Result.all()` method returns a list of all the `Row` objects. The `Row` objects themselves are intended to act like Python named tuples. Below we illustrate a variety of ways to access rows.
+
+**Tuple Assignment**: Assign variables to each row positionally as they are received:
+```py
+result = con.execute(text("select x, y from some_table"))
+for x, y in result:
+	...
+```
+
+
+

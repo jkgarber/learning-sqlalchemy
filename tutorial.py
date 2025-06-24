@@ -23,3 +23,9 @@ with engine.begin() as conn:
         text("INSERT INTO some_table (x, y) VALUES (:x, :y)"),
         [{"x": 6, "y": 8}, {"x": 9, "y": 10}],
     )
+
+# Fetching rows
+with engine.connect() as conn:
+    result = conn.execute(text("SELECT x, y FROM some_table"))
+    for row in result:
+        print(f"x: {row.x} y: {row.y}")
