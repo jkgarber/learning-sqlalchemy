@@ -165,3 +165,80 @@ with Session(Engine) as session:
 ```
 
 Note: The `Session` doesn’t hold onto the `Connection` object after it ends the transaction. It gets a new `Connection` from the `Engine` the next time it needs to execute SQL against the database.
+
+## Working with Database Metadata
+
+Alchemy. The central element of both SQLAlchemy Core and ORM is the SQL Expression Language which allows for fluent, composable construction of SQL queries. The most common foundational objects for database metadata in SQLAlchemy are known as `MetaData`, `Table`, and `Column`.
+
+### Setting Up MetaData with Table Objects
+
+In SQLAlchemy, the database “table” is ultimately represented by a Python object similarly named `Table`. `Table` objects are constructed programmatically, either directly, or indirectly by using ORM Mapped classes (described later).
+
+We always start out with a collection that will be where we place our tables known as the MetaData object:
+```py
+from sqlalchemy import MetaData
+metadata_obj = MetaData()
+```
+
+When not using ORM Declarative models at all, we construct each `Table` object directly, typically assigning each to a variable that will be how we will refer to the table in application code:
+```py
+from sqlalchemy import Table, Column, Integer, String
+user_table = Table(
+	"user_account",
+	metadata_obj,
+	Column("id", Integer, primary_key=True),
+	Column("name", String(30)),
+	Column("fullname", String),
+)
+```
+
+We can now use the `user_table` Python variable to refer to the `user_account` table in the database. The `Table` construct has a resemblance to a SQL CREATE TABLE statement.
+
+#### Components of `Table`
+
+- `Table` - represents a database table and assigns itself to a `MetaData` collection.
+- `Column` - represents a column in a database table, and assigns itself to a `Table` object. The `Column` usually includes a string name and a type object. The collection of `Column` objects in terms of the parent `Table` are typically accessed via an associative array located at `Table.c`:
+	```py
+	user_table.c.name
+	# Column('name', String(length=30), table=<user_account>)
+
+	user_table.c.keys()
+	# ['id', 'name', 'fullname']
+	```
+- `Integer`, `String` - these classes represent SQL datatypes and can be passed to a `Column` with or without necessarily being instantiated.
+
+#### Declaring Simple Constraints
+
+The `Column.primary_key` parameter which is a shorthand technique of indicating that this `Column` should be part of the primary key for this table. The primary key itself is represented by the `PrimaryKeyConstraint` construct, which we can see on the `Table.primary_key` attribute on the `Table` object:
+```py
+user_table.primary_key
+# PrimaryKeyConstraint(Column('id', Integer(), table=<user_account>, primary_key=True, nullable=False))
+```
+
+Below we declare a second table `address` that will have a foreign key constraint referring to the `user` table:
+```py
+from sqlalchemy import ForeignKey
+address_table = Table(
+	"address",
+	metadata_obj,
+	Column("id", Integer, primary_key=True),
+	Column("user_id", ForeignKey("user_account.id"), nullable=False),
+	Column("email_address", String, nullable=False),
+)
+```
+
+When using the `ForeignKey` object within a `Column` definition, we can omit the datatype for that `Column`; it is automatically inferred from that of the related column, in the above example the `Integer` datatype of the `user_account.id` column. The table above also features a third kind of constraint, which in SQL is the “NOT NULL” constraint, indicated using the `Column.nullable` parameter.
+
+#### Emitting DDL to the Database
+
+We'll emit CREATE TABLE statements, or DDL, to our SQLite database by invoking the `MetaData.create_all()` method on our `MetaData`, sending it the `Engine` that refers to the target database:
+
+```py
+metadata_obj.create_all(engine)
+```
+
+The DDL create process above includes some SQLite-specific PRAGMA statements that test for the existence of each table before emitting a CREATE.
+
+The create process also takes care of emitting CREATE statements in the correct order. In more complicated dependency scenarios the FOREIGN KEY constraints may also be applied to tables after the fact using ALTER.
+
+The `MetaData` object also features a `MetaData.drop_all()` method that will emit DROP statements in the reverse order as it would emit CREATE in order to drop schema elements. Overall, the CREATE / DROP feature of `MetaData` is useful for test suites, small and/or new applications, and applications that use short-lived databases. For management of an application database schema over the long term however, a schema management tool such as Alembic, which builds upon SQLAlchemy, is likely a better choice, as it can manage and orchestrate the process of incrementally altering a fixed database schema over time as the design of the application changes.
