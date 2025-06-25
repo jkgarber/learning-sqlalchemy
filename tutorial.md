@@ -166,9 +166,9 @@ with Session(Engine) as session:
 
 Note: The `Session` doesn’t hold onto the `Connection` object after it ends the transaction. It gets a new `Connection` from the `Engine` the next time it needs to execute SQL against the database.
 
-## Working with Database Metadata
+## Working with Database Metadata ([Source](https://docs.sqlalchemy.org/en/20/tutorial/metadata.html))
 
-Alchemy. The central element of both SQLAlchemy Core and ORM is the SQL Expression Language which allows for fluent, composable construction of SQL queries. The most common foundational objects for database metadata in SQLAlchemy are known as `MetaData`, `Table`, and `Column`.
+The central element of both SQLAlchemy Core and ORM is the SQL Expression Language which allows for fluent, composable construction of SQL queries. The most common foundational objects for database metadata in SQLAlchemy are known as `MetaData`, `Table`, and `Column`.
 
 ### Setting Up MetaData with Table Objects
 
@@ -209,7 +209,7 @@ We can now use the `user_table` Python variable to refer to the `user_account` t
 
 #### Declaring Simple Constraints
 
-The `Column.primary_key` parameter which is a shorthand technique of indicating that this `Column` should be part of the primary key for this table. The primary key itself is represented by the `PrimaryKeyConstraint` construct, which we can see on the `Table.primary_key` attribute on the `Table` object:
+The `Column.primary_key` parameter is a shorthand technique of indicating that this `Column` should be part of the primary key for this table. The primary key itself is represented by the `PrimaryKeyConstraint` construct, which we can see on the `Table.primary_key` attribute on the `Table` object:
 ```py
 user_table.primary_key
 # PrimaryKeyConstraint(Column('id', Integer(), table=<user_account>, primary_key=True, nullable=False))
@@ -237,8 +237,6 @@ We'll emit CREATE TABLE statements, or DDL, to our SQLite database by invoking t
 metadata_obj.create_all(engine)
 ```
 
-The DDL create process above includes some SQLite-specific PRAGMA statements that test for the existence of each table before emitting a CREATE.
-
-The create process also takes care of emitting CREATE statements in the correct order. In more complicated dependency scenarios the FOREIGN KEY constraints may also be applied to tables after the fact using ALTER.
+The DDL create process above includes some SQLite-specific PRAGMA statements that test for the existence of each table before emitting a CREATE. The create process also takes care of emitting CREATE statements in the correct order. In more complicated dependency scenarios the FOREIGN KEY constraints may also be applied to tables after the fact using ALTER.
 
 The `MetaData` object also features a `MetaData.drop_all()` method that will emit DROP statements in the reverse order as it would emit CREATE in order to drop schema elements. Overall, the CREATE / DROP feature of `MetaData` is useful for test suites, small and/or new applications, and applications that use short-lived databases. For management of an application database schema over the long term however, a schema management tool such as Alembic, which builds upon SQLAlchemy, is likely a better choice, as it can manage and orchestrate the process of incrementally altering a fixed database schema over time as the design of the application changes.
