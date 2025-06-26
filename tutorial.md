@@ -156,7 +156,7 @@ with Session(engine) as session:
 Also, like the `Connection`, the `Session` features “commit as you go” behavior using the `Session.commit()` method:
 
 ```py
-with Session(Engine) as session:
+with Session(engine) as session:
 	result = session.execute(
 		text("UPDATE some_table SET y=:y WHERE x=:x"),
 		[{"x": 9, "y": 11}, {"x": 13, "y": 15}],

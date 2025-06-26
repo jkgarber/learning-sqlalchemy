@@ -52,3 +52,36 @@ with Session(engine) as session:
     result = session.execute(stmt, {"y": 6})
     for row in result:
         print(f"x: {row.x} y: {row.y}")
+
+print("----------> Executing with an ORM Session: commit as you go")
+with Session(engine) as session:
+    result = session.execute(
+        text("UPDATE some_table SET y=:y WHERE x=:x"),
+        [{"x": 9, "y": 11}, {"x": 13, "y": 15}],
+    )
+    session.commit()
+
+print("----------> Working with Database Metadata")
+print("----------> Setting up MetaData with Table Objects")
+from sqlalchemy import MetaData
+metadata_obj = MetaData()
+
+from sqlalchemy import Table, Column, Integer, String
+user_table = Table(
+    "user_account",
+    metadata_obj,
+    Column("id", Integer, primary_key=True),
+    Column("name", String(30)),
+    Column("fullname", String),
+)
+
+from sqlalchemy import ForeignKey
+address_table = Table(
+    "address",
+    metadata_obj,
+    Column("id", Integer, primary_key=True),
+    Column("user_id", ForeignKey("user_account.id"), nullable=False),
+    Column("email_address", String, nullable=False),
+)
+
+metadata_obj.create_all(engine)

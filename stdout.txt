@@ -1,49 +1,87 @@
 ----------> Getting a Connection
-2025-06-24 14:30:12,790 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2025-06-24 14:30:12,790 INFO sqlalchemy.engine.Engine select 'hello world'
-2025-06-24 14:30:12,790 INFO sqlalchemy.engine.Engine [generated in 0.00017s] ()
+2025-06-26 20:50:49,101 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-06-26 20:50:49,101 INFO sqlalchemy.engine.Engine select 'hello world'
+2025-06-26 20:50:49,101 INFO sqlalchemy.engine.Engine [generated in 0.00016s] ()
 [('hello world',)]
-2025-06-24 14:30:12,790 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-06-26 20:50:49,101 INFO sqlalchemy.engine.Engine ROLLBACK
 ----------> Committing Changes: commit as you go
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine CREATE TABLE some_table (x int, y int)
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine [generated in 0.00008s] ()
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine INSERT INTO some_table (x, y) VALUES (?, ?)
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine [generated in 0.00007s] [(1, 1), (2, 4)]
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine COMMIT
+2025-06-26 20:50:49,101 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-06-26 20:50:49,101 INFO sqlalchemy.engine.Engine CREATE TABLE some_table (x int, y int)
+2025-06-26 20:50:49,101 INFO sqlalchemy.engine.Engine [generated in 0.00007s] ()
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine INSERT INTO some_table (x, y) VALUES (?, ?)
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine [generated in 0.00007s] [(1, 1), (2, 4)]
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine COMMIT
 ----------> Committing Changes: begin once
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine INSERT INTO some_table (x, y) VALUES (?, ?)
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine [cached since 0.0002769s ago] [(6, 8), (9, 10)]
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine COMMIT
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine INSERT INTO some_table (x, y) VALUES (?, ?)
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine [cached since 0.0002795s ago] [(6, 8), (9, 10)]
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine COMMIT
 ----------> Fetching Rows
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine SELECT x, y FROM some_table
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine [generated in 0.00006s] ()
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine SELECT x, y FROM some_table
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine [generated in 0.00006s] ()
 x: 1 y: 1
 x: 2 y: 4
 x: 6 y: 8
 x: 9 y: 10
-2025-06-24 14:30:12,791 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine ROLLBACK
 ----------> Sending Parameters
-2025-06-24 14:30:12,792 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2025-06-24 14:30:12,792 INFO sqlalchemy.engine.Engine SELECT x, y FROM some_table WHERE y > ?
-2025-06-24 14:30:12,792 INFO sqlalchemy.engine.Engine [generated in 0.00007s] (2,)
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine SELECT x, y FROM some_table WHERE y > ?
+2025-06-26 20:50:49,102 INFO sqlalchemy.engine.Engine [generated in 0.00007s] (2,)
 x: 2 y: 4
 x: 6 y: 8
 x: 9 y: 10
-2025-06-24 14:30:12,792 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-06-26 20:50:49,103 INFO sqlalchemy.engine.Engine ROLLBACK
 ----------> Sending Multiple Parameters
-2025-06-24 14:30:12,792 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2025-06-24 14:30:12,792 INFO sqlalchemy.engine.Engine INSERT INTO some_table (x, y) VALUES (?, ?)
-2025-06-24 14:30:12,792 INFO sqlalchemy.engine.Engine [cached since 0.0008896s ago] [(11, 12), (13, 14)]
-2025-06-24 14:30:12,792 INFO sqlalchemy.engine.Engine COMMIT
+2025-06-26 20:50:49,103 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-06-26 20:50:49,103 INFO sqlalchemy.engine.Engine INSERT INTO some_table (x, y) VALUES (?, ?)
+2025-06-26 20:50:49,103 INFO sqlalchemy.engine.Engine [cached since 0.0009171s ago] [(11, 12), (13, 14)]
+2025-06-26 20:50:49,103 INFO sqlalchemy.engine.Engine COMMIT
 ----------> Executing with an ORM Session
-2025-06-24 14:30:12,823 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2025-06-24 14:30:12,824 INFO sqlalchemy.engine.Engine SELECT x, y FROM some_table WHERE y > ? ORDER BY x, y
-2025-06-24 14:30:12,824 INFO sqlalchemy.engine.Engine [generated in 0.00010s] (6,)
+2025-06-26 20:50:49,134 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-06-26 20:50:49,134 INFO sqlalchemy.engine.Engine SELECT x, y FROM some_table WHERE y > ? ORDER BY x, y
+2025-06-26 20:50:49,135 INFO sqlalchemy.engine.Engine [generated in 0.00008s] (6,)
 x: 6 y: 8
 x: 9 y: 10
 x: 11 y: 12
 x: 13 y: 14
-2025-06-24 14:30:12,824 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-06-26 20:50:49,135 INFO sqlalchemy.engine.Engine ROLLBACK
+----------> Executing with an ORM Session: commit as you go
+2025-06-26 20:50:49,135 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-06-26 20:50:49,135 INFO sqlalchemy.engine.Engine UPDATE some_table SET y=? WHERE x=?
+2025-06-26 20:50:49,135 INFO sqlalchemy.engine.Engine [generated in 0.00006s] [(11, 9), (15, 13)]
+2025-06-26 20:50:49,135 INFO sqlalchemy.engine.Engine COMMIT
+----------> Working with Database Metadata
+----------> Setting up MetaData with Table Objects
+2025-06-26 20:50:49,136 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-06-26 20:50:49,136 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("user_account")
+2025-06-26 20:50:49,136 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-06-26 20:50:49,136 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("user_account")
+2025-06-26 20:50:49,136 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-06-26 20:50:49,136 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("address")
+2025-06-26 20:50:49,136 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-06-26 20:50:49,136 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("address")
+2025-06-26 20:50:49,136 INFO sqlalchemy.engine.Engine [raw sql] ()
+2025-06-26 20:50:49,137 INFO sqlalchemy.engine.Engine 
+CREATE TABLE user_account (
+	id INTEGER NOT NULL, 
+	name VARCHAR(30), 
+	fullname VARCHAR, 
+	PRIMARY KEY (id)
+)
+
+
+2025-06-26 20:50:49,137 INFO sqlalchemy.engine.Engine [no key 0.00006s] ()
+2025-06-26 20:50:49,137 INFO sqlalchemy.engine.Engine 
+CREATE TABLE address (
+	id INTEGER NOT NULL, 
+	user_id INTEGER NOT NULL, 
+	email_address VARCHAR NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES user_account (id)
+)
+
+
+2025-06-26 20:50:49,137 INFO sqlalchemy.engine.Engine [no key 0.00004s] ()
+2025-06-26 20:50:49,137 INFO sqlalchemy.engine.Engine COMMIT
