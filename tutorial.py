@@ -7,7 +7,7 @@ print("----------> Getting a Connection")
 with engine.connect() as conn:
     result = conn.execute(text("select 'hello world'"))
     print(result.all())
-    
+
 print("----------> Committing Changes: commit as you go")
 with engine.connect() as conn:
     conn.execute(text("CREATE TABLE some_table (x int, y int)"))

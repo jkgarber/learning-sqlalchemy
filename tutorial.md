@@ -4,7 +4,7 @@ Following the official [SQLAlchemy Unified Tutorial — SQLAlchemy 2.0 Documenta
 
 ## Installation ([Source](https://docs.sqlalchemy.org/en/20/intro.html))
 
-In a Python venv: `pip install sqlalchemy`
+In a uv project: `uv add sqlalchemy`
 
 ## Establishing Connectivity - the Engine ([Source](https://docs.sqlalchemy.org/en/20/tutorial/engine.html))
 
@@ -38,6 +38,13 @@ The purpose of the `Engine` is to connect to the database by providing a `Connec
 with engine.connect() as conn:
 	result = conn.execute(text("select 'hello world'"))
 	print(result.all())
+
+# 2025-07-09 15:31:50,941 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+# 2025-07-09 15:31:50,941 INFO sqlalchemy.engine.Engine select 'hello world'
+# 2025-07-09 15:31:50,941 INFO sqlalchemy.engine.Engine [generated in 0.00017s] ()
+# [('hello world',)]
+# 2025-07-09 15:31:50,941 INFO sqlalchemy.engine.Engine ROLLBACK
+
 ```
 
 ### Committing Changes
@@ -52,6 +59,14 @@ with engine.connect() as conn:
 		[{"x": 1, "y": 1}, {"x": 2, "y": 4}],
 	)
 	conn.commit()
+
+# 2025-07-09 15:31:50,941 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+# 2025-07-09 15:31:50,941 INFO sqlalchemy.engine.Engine CREATE TABLE some_table (x int, y int)
+# 2025-07-09 15:31:50,941 INFO sqlalchemy.engine.Engine [generated in 0.00007s] ()
+# 2025-07-09 15:31:50,941 INFO sqlalchemy.engine.Engine INSERT INTO some_table (x, y) VALUES (?, ?)
+# 2025-07-09 15:31:50,941 INFO sqlalchemy.engine.Engine [generated in 0.00007s] [(1, 1), (2, 4)]
+# 2025-07-09 15:31:50,941 INFO sqlalchemy.engine.Engine COMMIT
+
 ```
 
 After this, we can continue to run more SQL statements and call `Connection.commit()` again for those statements. SQLAlchemy refers to this style as **commit as you go**.
@@ -64,6 +79,12 @@ with engine.begin() as conn:
 		text("INSERT INTO some_table (x, y) VALUES (:x, :y)"),
 		[{"x": 6, "y": 8}, {"x": 9, "y": 10}],
 	)
+
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine INSERT INTO some_table (x, y) VALUES (?, ?)
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine [cached since 0.0002914s ago] [(6, 8), (9, 10)]
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine COMMIT
+
 ```
 
 This style is known as **begin once**. You should mostly prefer this style because it’s shorter and shows the intention of the entire block up front. However, in this tutorial we’ll use “commit as you go” style as it’s more flexible for demonstration purposes.
@@ -81,6 +102,16 @@ with engine.connect() as conn:
 	result = conn.execute(text("SELECT x, y FROM some_table"))
 	for row in result:
 		print(f"x: {row.x} y:{row.y}")
+
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine SELECT x, y FROM some_table
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine [generated in 0.00006s] ()
+# x: 1 y: 1
+# x: 2 y: 4
+# x: 6 y: 8
+# x: 9 y: 10
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine ROLLBACK
+
 ```
 
 `Conn.execute()` returned a called `Result` object representing an iterable object of result rows. The `Result.all()` method returns a list of all the `Row` objects. The `Row` objects themselves are intended to act like Python named tuples. Below we illustrate a variety of ways to access rows.
@@ -120,6 +151,15 @@ with engine.connect() as conn:
 	result = conn.execute(text("SElECT x, y FROM some_table WHERE y > :y"), {"y": 2})
 	for row in result:
 		print(f"x: {row.x} y: {row.y}")
+
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine SELECT x, y FROM some_table WHERE y > ?
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine [generated in 0.00006s] (2,)
+# x: 2 y: 4
+# x: 6 y: 8
+# x: 9 y: 10
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine ROLLBACK
+
 ```
 
 In the logged SQL output the bound parameter `:y` was converted into a question mark because the SQLite database driver uses a format called “qmark parameter style”. This is most famously known as how to avoid SQL injection attacks when the data is untrusted. However it also allows the SQLAlchemy dialects and/or DBAPI to correctly handle the incoming input for the backend.
@@ -135,6 +175,12 @@ with engine.connect() as conn:
 		[{"x": 11, "y": 12}, {"x": 13, "y": 14}],
 	)
 	conn.commit()
+
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine INSERT INTO some_table (x, y) VALUES (?, ?)
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine [cached since 0.0009053s ago] [(11, 12), (13, 14)]
+# 2025-07-09 15:31:50,942 INFO sqlalchemy.engine.Engine COMMIT
+
 ```
 
 A key behavioral difference between “execute” and “executemany” is that the latter doesn’t support returning of result rows, even if the statement includes the RETURNING clause. The one exception to this is when using a Core `insert()` construct, introduced later in this tutorial.
@@ -151,6 +197,16 @@ with Session(engine) as session:
 	result = session.execute(stmt, {"y": 6})
 	for row in result:
 		print(f"x: {row.x} y: {row.y})
+
+# 2025-07-09 15:31:50,975 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+# 2025-07-09 15:31:50,975 INFO sqlalchemy.engine.Engine SELECT x, y FROM some_table WHERE y > ? ORDER BY x, y
+# 2025-07-09 15:31:50,975 INFO sqlalchemy.engine.Engine [generated in 0.00008s] (6,)
+# x: 6 y: 8
+# x: 9 y: 10
+# x: 11 y: 12
+# x: 13 y: 14
+# 2025-07-09 15:31:50,975 INFO sqlalchemy.engine.Engine ROLLBACK
+
 ```
 
 Also, like the `Connection`, the `Session` features “commit as you go” behavior using the `Session.commit()` method:
@@ -162,6 +218,12 @@ with Session(engine) as session:
 		[{"x": 9, "y": 11}, {"x": 13, "y": 15}],
 	)
 	session.commit()
+
+# 2025-07-09 15:31:50,975 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+# 2025-07-09 15:31:50,975 INFO sqlalchemy.engine.Engine UPDATE some_table SET y=? WHERE x=?
+# 2025-07-09 15:31:50,975 INFO sqlalchemy.engine.Engine [generated in 0.00007s] [(11, 9), (15, 13)]
+# 2025-07-09 15:31:50,975 INFO sqlalchemy.engine.Engine COMMIT
+
 ```
 
 Note: The `Session` doesn’t hold onto the `Connection` object after it ends the transaction. It gets a new `Connection` from the `Engine` the next time it needs to execute SQL against the database.
@@ -235,8 +297,42 @@ We'll emit CREATE TABLE statements, or DDL, to our SQLite database by invoking t
 
 ```py
 metadata_obj.create_all(engine)
+
+# 2025-07-09 15:31:50,976 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+# 2025-07-09 15:31:50,976 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("user_account")
+# 2025-07-09 15:31:50,976 INFO sqlalchemy.engine.Engine [raw sql] ()
+# 2025-07-09 15:31:50,976 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("user_account")
+# 2025-07-09 15:31:50,976 INFO sqlalchemy.engine.Engine [raw sql] ()
+# 2025-07-09 15:31:50,976 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("address")
+# 2025-07-09 15:31:50,976 INFO sqlalchemy.engine.Engine [raw sql] ()
+# 2025-07-09 15:31:50,976 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("address")
+# 2025-07-09 15:31:50,976 INFO sqlalchemy.engine.Engine [raw sql] ()
+# 2025-07-09 15:31:50,977 INFO sqlalchemy.engine.Engine 
+# CREATE TABLE user_account (
+# 	id INTEGER NOT NULL, 
+# 	name VARCHAR(30), 
+# 	fullname VARCHAR, 
+# 	PRIMARY KEY (id)
+# )
+# 
+# 
+# 2025-07-09 15:31:50,977 INFO sqlalchemy.engine.Engine [no key 0.00006s] ()
+# 2025-07-09 15:31:50,977 INFO sqlalchemy.engine.Engine 
+# CREATE TABLE address (
+# 	id INTEGER NOT NULL, 
+# 	user_id INTEGER NOT NULL, 
+# 	email_address VARCHAR NOT NULL, 
+# 	PRIMARY KEY (id), 
+# 	FOREIGN KEY(user_id) REFERENCES user_account (id)
+# )
+# 
+# 
+# 2025-07-09 15:31:50,977 INFO sqlalchemy.engine.Engine [no key 0.00005s] ()
+# 2025-07-09 15:31:50,977 INFO sqlalchemy.engine.Engine COMMIT
+
 ```
 
 The DDL create process above includes some SQLite-specific PRAGMA statements that test for the existence of each table before emitting a CREATE. The create process also takes care of emitting CREATE statements in the correct order. In more complicated dependency scenarios the FOREIGN KEY constraints may also be applied to tables after the fact using ALTER.
 
 The `MetaData` object also features a `MetaData.drop_all()` method that will emit DROP statements in the reverse order as it would emit CREATE in order to drop schema elements. Overall, the CREATE / DROP feature of `MetaData` is useful for test suites, small and/or new applications, and applications that use short-lived databases. For management of an application database schema over the long term however, a schema management tool such as Alembic, which builds upon SQLAlchemy, is likely a better choice, as it can manage and orchestrate the process of incrementally altering a fixed database schema over time as the design of the application changes.
+
