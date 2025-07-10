@@ -402,3 +402,56 @@ class Address(Base):
 ```
 
 `User` and `Address` are now called as ORM Mapped Classes, and are available for use in ORM persistence and query operations, which will be described later. Details about these classes include:
+
+* Each class refers to a `Table` object that was generated as part of the declarative mapping process, which is named by assigning a string to the `DeclarativeBase.__tablename__` attribute. Once the class is created, this generated `Table` is available from the `DeclarativeBase.__table__` attribute.
+* To indicate columns in the `Table`, we use the `mapped_column()` construct, in combination with typing annotations based on the `Mapped` type. This object will generate `Column` objects that are applied to the construction of the `Table`.
+* For columns with simple datatypes and no other options, we can indicate a `Mapped` type annotation alone, using simple Python types like `int` and `str`.
+* A column can be declared as “nullable” or “not null” based on the presence of the `Optional[<typ>]` type annotation (e.g. `User.fullname` above).
+* Use of explicit typing annotations is completely optional. We could instead use more explicit type objects like `Integer` and `String` as well as `nullable=False` as needed within each `mapped_column()` construct.
+* The `relationship()` construct is discussed more fully at Working with ORM Related Objects (below).
+* The classes are automatically given an `__init__()` method if we don’t declare one of our own. The default form of this method accepts all attribute names as optional keyword arguments:
+  ```py
+  sandy = User(name="Sandy", fullname="Sandy Cheeks")
+  ```
+  It’s also an option to use an explicit `__init__()` method as well.
+* The `__repr__()` methods are added so that we get a readable string output; there’s no requirement for these methods to be here.	
+
+#### Emitting DDL to the database from an ORM mapping
+
+Emitting DDL given the Declarative Base uses the same process as that described previously at Emitting DDL to the Database:
+
+```py
+Base.metadata.create_all(engine)
+
+# 2025-07-10 11:53:43,172 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+# 2025-07-10 11:53:43,172 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("user_account")
+# 2025-07-10 11:53:43,172 INFO sqlalchemy.engine.Engine [raw sql] ()
+# 2025-07-10 11:53:43,172 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("user_account")
+# 2025-07-10 11:53:43,172 INFO sqlalchemy.engine.Engine [raw sql] ()
+# 2025-07-10 11:53:43,172 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("address")
+# 2025-07-10 11:53:43,172 INFO sqlalchemy.engine.Engine [raw sql] ()
+# 2025-07-10 11:53:43,172 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("address")
+# 2025-07-10 11:53:43,172 INFO sqlalchemy.engine.Engine [raw sql] ()
+# 2025-07-10 11:53:43,173 INFO sqlalchemy.engine.Engine 
+# CREATE TABLE user_account (
+# 	id INTEGER NOT NULL, 
+# 	name VARCHAR(30) NOT NULL, 
+# 	fullname VARCHAR, 
+# 	PRIMARY KEY (id)
+# )
+# 
+# 
+# 2025-07-10 11:53:43,173 INFO sqlalchemy.engine.Engine [no key 0.00004s] ()
+# 2025-07-10 11:53:43,173 INFO sqlalchemy.engine.Engine 
+# CREATE TABLE address (
+# 	id INTEGER NOT NULL, 
+# 	email_address VARCHAR NOT NULL, 
+# 	user_id INTEGER, 
+# 	PRIMARY KEY (id), 
+# 	FOREIGN KEY(user_id) REFERENCES user_account (id)
+# )
+# 
+# 
+# 2025-07-10 11:53:43,173 INFO sqlalchemy.engine.Engine [no key 0.00004s] ()
+# 2025-07-10 11:53:43,173 INFO sqlalchemy.engine.Engine COMMIT
+```
