@@ -470,7 +470,7 @@ Components of this section:
 
 ### Using INSERT Statements
 
-A SQL INSERT statement is generated directly using the `insert()` function. This section details the Core means of generating an individual SQL INSERT statement in order to add new rows to a table.
+This section details the Core means of generating an individual SQL INSERT statement in order to add new rows to a table. A SQL INSERT statement is generated directly using the `insert()` function. 
 
 #### The insert() SQL Expression Construct
 
@@ -504,4 +504,38 @@ with engine.connect() as conn:
 # 2025-07-10 13:06:41,533 INFO sqlalchemy.engine.Engine COMMIT
 ```
 
+In its simple form above, the INSERT statement does not return any rows, and if only a single row is inserted, it will usually include the ability to return data generated during the INSERT of that row, most commonly an integer primary key value:
 
+```py
+result.inserted_primary_key
+
+# (1, )
+```
+
+#### INSERT usually generates the “values” clause automatically
+
+If we don’t actually use `Insert.values()` and just print out an “empty” statement, we get an INSERT for every column in the table:
+
+```py
+print(insert(user_table))
+
+# INSERT INTO user_account (id, name, fullname) VALUES (:id, :name, :fullname)
+```
+
+If we take an `Insert` construct that has not had `Insert.values()` called upon it and execute it rather than print it, the statement will be compiled to a string based on the parameters that we passed to the `Connection.execute()` method, and only include columns relevant to the parameters that were passed.
+
+```py
+with engine.connect() as conn:
+    result = conn.execute(
+	    insert(user_table),
+		[
+		    {"name": "sandy", "fullname": "Sandy Cheeks"},
+			{"name": "patrick", "fullname": "Patrick Star"},
+		],
+	)
+	conn.commit()
+
+# 2025-07-10 15:44:06,874 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+# 2025-07-10 15:44:06,874 INFO sqlalchemy.engine.Engine INSERT INTO user_account (name, fullname) VALUES (?, ?)
+# 2025-07-10 15:44:06,874 INFO sqlalchemy.engine.Engine [generated in 0.00009s] [('sandy', 'Sandy Cheeks'), ('patrick', 'Patrick Star')]
+# 2025-07-10 15:44:06,874 INFO sqlalchemy.engine.Engine COMMIT

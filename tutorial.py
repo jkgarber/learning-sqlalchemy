@@ -97,3 +97,14 @@ with engine.connect() as conn:
     result = conn.execute(stmt)
     conn.commit()
 
+print("---------> INSERT usually generates the “values” clause automatically")
+with engine.connect() as conn:
+    result = conn.execute(
+        insert(user_table),
+        [
+            {"name": "sandy", "fullname": "Sandy Cheeks"},
+            {"name": "patrick", "fullname": "Patrick Star"},
+        ],
+    )
+    conn.commit()
+
