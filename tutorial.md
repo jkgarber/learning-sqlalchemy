@@ -338,7 +338,7 @@ The `MetaData` object also features a `MetaData.drop_all()` method that will emi
 
 ### Using ORM Declarative Forms to Define Table Metadata
 
-When using the ORM, the process by which we declare `Table` metadata is usually combined with the process of declaring mapped classes. The mapped class is any Python class we’d like to create, which will then have attributes on it that will be linked to the columns in a database table. This style is known as declarative, and allows us to declare our user-defined classes and `Table` metadata at once.
+When using the ORM, the process to declare `Table` metadata is usually combined with the process of declaring mapped classes. The mapped class is any Python class we’d like to create, which will then have attributes on it that will be linked to the columns in a database table. This style is known as declarative, and allows us to declare our user-defined classes and `Table` metadata at once.
 
 #### Establishing a Declarative Base
 
@@ -362,7 +362,7 @@ The Declarative Base also refers to a collection called `registry`, which is the
 
 ```py
 Base.registry
-# <sqlalchemy.orm.decl_api.registry object at 0x...>a
+# <sqlalchemy.orm.decl_api.registry object at 0x...>
 ```
 
 #### Declaring Mapped Classes
