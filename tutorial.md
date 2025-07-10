@@ -367,4 +367,38 @@ Base.registry
 
 #### Declaring Mapped Classes
 
+With the `Base` class established, we can now define ORM mapped classes for the `user_account` and `address` tables in terms of new classes `User` and `Address`.
 
+```py
+from typing import List
+from typing import Optional
+from sqlalchemy import Mapped
+from sqlalchemy import mapped_column
+from sqlalchemy import relationship
+
+class User(Base):
+    __tablename__ = "user_account"
+
+	id: Mapped[int] = mapped_column(primary_key=True)
+	name: Mapped[str] = mapped_column(String(30))
+	fullname: Mapped[Optional[str]]
+
+	adresses: Mapped[List["Address"]] = relationship(back_populates="user")
+
+	def __repr__(self) -> str:
+	    return f"User(id={self.id!r}, name={self.name!r}, fullname={self.fullname!r})"
+
+class Address(Base):
+	__tablename__ = "address"
+
+	id: Mapped[int] = mapped_column(primary_key = True)
+	email_address: Mapped[str]
+	user_id = mapped_column(ForeignKey("user_account.id"))
+
+	user: Mapped[User] = relationship(back_populates = "addresses")
+
+	def __repr__(self) -> str:
+		return f"Address(id={self.id!r}, email_address={self.email_address!r}"
+```
+
+`User` and `Address` are now called as ORM Mapped Classes, and are available for use in ORM persistence and query operations, which will be described later. Details about these classes include:
