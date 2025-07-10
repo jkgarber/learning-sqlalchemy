@@ -8,6 +8,8 @@ In a uv project: `uv add sqlalchemy`
 
 ## Establishing Connectivity - the Engine ([Source](https://docs.sqlalchemy.org/en/20/tutorial/engine.html))
 
+While this subsection is Core-centric, all of the concepts here are relevant to ORM use as well.
+
 Every SQLAlchemy application that connects to a database needs to use an `Engine`. The `Engine` is created by using the `create_engine()` function:
 
 ```py
@@ -21,6 +23,8 @@ The string URL is composed of:
 - The database location: `/:memory:`
 
 Passing `echo=True` ensures that the `Engine` will log all of the SQL it emits to a Python logger that will write to standard out.
+
+Note: When using the ORM, the `Engine` is managed by the `Session`. 
 
 ## Working with Transactions and the DBAPI ([Source](https://docs.sqlalchemy.org/en/20/tutorial/dbapi_transactions.html))
 
@@ -91,7 +95,7 @@ This style is known as **begin once**. You should mostly prefer this style becau
 
 ### Basics of Statement Execution
 
-In this section we’ll illustrate more closely the mechanics and interactions of `Connection.execute()`, `text()`, and `Result`.
+In this section we’ll illustrate more closely the mechanics and interactions of `Connection.execute()`, `text()`, and `Result`. Most of the content in this section applies equally well to modern ORM use when using the `Session.execute()` method,
 
 #### Fetching Rows
 
