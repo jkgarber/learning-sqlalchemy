@@ -336,3 +336,35 @@ The DDL create process above includes some SQLite-specific PRAGMA statements tha
 
 The `MetaData` object also features a `MetaData.drop_all()` method that will emit DROP statements in the reverse order as it would emit CREATE in order to drop schema elements. Overall, the CREATE / DROP feature of `MetaData` is useful for test suites, small and/or new applications, and applications that use short-lived databases. For management of an application database schema over the long term however, a schema management tool such as Alembic, which builds upon SQLAlchemy, is likely a better choice, as it can manage and orchestrate the process of incrementally altering a fixed database schema over time as the design of the application changes.
 
+### Using ORM Declarative Forms to Define Table Metadata
+
+When using the ORM, the process by which we declare `Table` metadata is usually combined with the process of declaring mapped classes. The mapped class is any Python class we’d like to create, which will then have attributes on it that will be linked to the columns in a database table. This style is known as declarative, and allows us to declare our user-defined classes and `Table` metadata at once.
+
+#### Establishing a Declarative Base
+
+When using the ORM, the `MetaData` collection is associated with an ORM-only construct commonly referred to as the **Declarative Base**. You can get a new Declarative Base by subclassing the SQLAlchemy `DeclarativeBase` class:
+
+```py
+from sqlalchemy.orm import DeclarativeBase
+class Base(DeclarativeBase):
+	pass
+```
+
+Now when we make new subclasses of `Base`, each will be a new **ORM mapped class**, typically (but not exclusively) referring to a particular `Table` object.
+
+The Declarative Base refers to a `MetaData` collection that is created for us automatically. As we create new mapped classes, they each will reference a `Table` within this `MetaData` collection:
+
+```py
+Base.metadata
+# MetaData()
+```
+The Declarative Base also refers to a collection called `registry`, which is the central “mapper configuration” unit in the ORM. It's central to the mapper configuration process, allowing a set of ORM mapped classes to coordinate with each other. It's seldom accessed directly.
+
+```py
+Base.registry
+# <sqlalchemy.orm.decl_api.registry object at 0x...>a
+```
+
+#### Declaring Mapped Classes
+
+
