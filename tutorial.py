@@ -85,3 +85,15 @@ address_table = Table(
 )
 
 metadata_obj.create_all(engine)
+
+print("----------> Using INSERT Statements")
+print("----------> The insert() SQL Expression Construct")
+from sqlalchemy import insert
+stmt = insert(user_table).values(name="spongebob", fullname="Spongebob Squarepants")
+print(stmt)
+
+print("----------> Executing the Statement (INSERT)")
+with engine.connect() as conn:
+    result = conn.execute(stmt)
+    conn.commit()
+

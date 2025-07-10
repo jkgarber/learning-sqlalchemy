@@ -459,3 +459,49 @@ Base.metadata.create_all(engine)
 # 2025-07-10 11:53:43,173 INFO sqlalchemy.engine.Engine [no key 0.00004s] ()
 # 2025-07-10 11:53:43,173 INFO sqlalchemy.engine.Engine COMMIT
 ```
+
+## Working with Data
+
+Components of this section:
+
+* Using INSERT Statements: Core only (but useful to understand for ORM). For ORM-specific see below section Data Manipulation with the ORM.
+* Using SELECT Statements: The `Select` construct emits SELECT statements for both Core and ORM centric applications and both use cases will be described here. Additional ORM use cases are also noted in the later section Using Relationships in Queries as well as the [ORM Querying Guide](https://docs.sqlalchemy.org/en/20/orm/queryguide/index.html).
+* Using UPDATE and DELETE Statements: Core-specific. For ORM-specific see the sections Updating ORM Objects using the Unit of Work pattern and Deleting ORM Objects using the Unit of Work pattern.
+
+### Using INSERT Statements
+
+A SQL INSERT statement is generated directly using the `insert()` function. This section details the Core means of generating an individual SQL INSERT statement in order to add new rows to a table.
+
+#### The insert() SQL Expression Construct
+
+A simple example of `Insert` illustrating the target table and the VALUES clause at once:
+
+```py
+from sqlalchemy import insert
+stmt = insert(user_table).values(name="spongebob", fullname="Spongebob Squarepants")
+```
+
+The above `stmt` variable is an instance of `Insert`. Most SQL expressions can be stringified in place as a means to see the general form of what’s being produced:
+
+```py
+print(stmt)
+
+# INSERT INTO user_account (name, fullname) VALUES (:name, :fullname)
+```
+
+Our `Insert` construct is an example of a “parameterized” construct, illustrated previously in the Sending Parameters section.
+
+#### Executing the Statement
+
+```py
+with engine.connect() as conn:
+    result = conn.execute(stmt)
+	conn.commit()
+
+# 2025-07-10 13:06:41,533 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+# 2025-07-10 13:06:41,533 INFO sqlalchemy.engine.Engine INSERT INTO user_account (name, fullname) VALUES (?, ?)
+# 2025-07-10 13:06:41,533 INFO sqlalchemy.engine.Engine [generated in 0.00010s] ('spongebob', 'Spongebob Squarepants')
+# 2025-07-10 13:06:41,533 INFO sqlalchemy.engine.Engine COMMIT
+```
+
+
